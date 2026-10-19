@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Inchiesta di Liberi Network sulle pagine Facebook gestite dall'estero che pubblicano contenuti su Giorgia Meloni per il pubblico italiano.">
+<meta name="description" content="Inchiesta di Liberi Network su 116 pagine Facebook gestite dall'estero che pubblicano contenuti su Giorgia Meloni per il pubblico italiano.">
 <meta name="theme-color" content="#0B0D10">
 <title>Content Farm Italia</title>
 
@@ -298,6 +298,35 @@ main { padding-top: var(--bar-h); }
 .proofs-head h3 { font-family: var(--font-display); font-weight: 400; font-size: 34px; margin: 0; text-transform: uppercase; line-height: 1; }
 @media (max-width: 1080px) { .net { grid-template-columns: minmax(0, 1fr); } .net-graph { border-right: 0; border-bottom: 1px solid var(--line); min-height: 520px; } }
 
+
+.avatar { display: grid; place-items: center; font-family: var(--font-mono); font-weight: 700; font-size: 11px; letter-spacing: .02em; border-radius: 50%; overflow: hidden; flex: none; }
+.pcard-top .avatar, .pagefocus .avatar { font-size: 20px; }
+.m-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 18px; margin-top: 18px; align-items: start; }
+@media (max-width: 1000px) { .m-grid { grid-template-columns: minmax(0, 1fr); } }
+.mrank-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) 120px; gap: 12px; padding: 8px 14px; border-bottom: 1px solid var(--line-soft); color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+.mrank-head span:last-child { grid-column: 2 / 4; }
+.mrow { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) 120px; gap: 12px; align-items: center; padding: 8px 14px; border-bottom: 1px solid var(--line-soft); width: 100%; transition: background .16s; }
+.mrow:hover { background: var(--surface-2); }
+.mrow:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.mrow-who { display: grid; grid-template-columns: 22px 30px minmax(0, 1fr); gap: 8px; align-items: center; min-width: 0; }
+.mrow-who em { font-style: normal; font-family: var(--font-display); font-size: 22px; color: var(--muted); text-align: right; }
+.mrow-who img, .mrow-who .avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+.mrow-who strong { display: block; font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mrow-who small { display: block; color: var(--muted); font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mrow-bar { position: relative; height: 10px; background: var(--line-soft); }
+.mrow-range { position: absolute; top: 0; bottom: 0; }
+.mrow-val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; font-size: 11.5px; white-space: nowrap; }
+@media (max-width: 640px) { .mrow, .mrank-head { grid-template-columns: minmax(0, 1fr) 96px; } .mrow-bar { grid-column: 1 / -1; grid-row: 2; } .mrank-head span:last-child { grid-column: 2; } .mrow-val { font-size: 10.5px; } }
+.mstep { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 2px 10px; padding: 11px 14px; border-bottom: 1px solid var(--line-soft); }
+.mstep em { grid-row: span 2; font-style: normal; font-family: var(--font-display); font-size: 24px; color: var(--accent); line-height: 1; }
+.mstep b { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+.mstep span { font-family: var(--font-body); font-size: 13px; color: var(--ink-2); line-height: 1.45; }
+.proof-group { display: grid; gap: 4px; text-decoration: none; padding: 12px; border: 1px solid #57D6C955; background: rgba(87, 214, 201, .06); }
+.proof-group b { font-family: var(--font-body); font-size: 15px; overflow-wrap: anywhere; }
+.proof-group small { color: var(--muted); font-size: 11px; }
+.proof-group:hover { border-color: #57D6C9; }
+.proof-admins { display: grid; gap: 8px; }
+
 .foot { border-top: 1px solid var(--line); padding-block: 40px 56px; }
 .foot-in { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: start; }
 .foot p { font-family: var(--font-body); font-size: 13px; line-height: 1.6; color: var(--muted); margin: 0 0 10px; max-width: 90ch; }
@@ -323,6 +352,7 @@ main { padding-top: var(--bar-h); }
     <a href="#localizzazione" data-sec="localizzazione"><b>02</b><span>Localizzazione</span></a>
     <a href="#contenuti" data-sec="contenuti"><b>03</b><span>Contenuti</span></a>
     <a href="#reti" data-sec="reti"><b>04</b><span>Reti</span></a>
+    <a href="#mercato" data-sec="mercato"><b>05</b><span>Mercato</span></a>
   </nav>
   <a class="bar-logo" href="https://liberinetwork.eu" target="_blank" rel="noopener"><img src="media/liberi-network.png" alt="Liberi Network" width="420" height="67"></a>
 </header>
@@ -330,10 +360,10 @@ main { padding-top: var(--bar-h); }
 <main id="top">
   <section class="hero wrap" aria-label="Introduzione">
     <div class="hero-in">
-      <div class="kicker">Osservatorio <b>·</b> Facebook <b>·</b> rilevazione 13–14 ottobre 2026</div>
+      <div class="kicker">Osservatorio <b>·</b> Facebook <b>·</b> 116 pagine <b>·</b> luglio–ottobre 2026</div>
       <h1>Content Farm <span>Italia</span></h1>
       <img class="logo" src="media/liberi-network.png" alt="Liberi Network" width="420" height="67">
-      <p class="lede">Pagine amministrate dallo Sri Lanka, dal Pakistan, dall'Armenia e dal Vietnam pubblicano ogni giorno immagini di Giorgia Meloni pensate per il pubblico italiano. Cosa arriva nel feed, da dove arriva, cosa raccontano e chi c'è dietro.</p>
+      <p class="lede">Centosedici pagine amministrate soprattutto dallo Sri Lanka, ma anche da Pakistan, Armenia, Vietnam e Corea del Sud, pubblicano ogni giorno immagini di Giorgia Meloni pensate per il pubblico italiano. Cosa arriva nel feed, da dove arriva, cosa raccontano, chi c'è dietro e quanto rende.</p>
       <a class="hero-scroll" href="#contesto">Scorri l'inchiesta</a>
     </div>
   </section>
@@ -401,7 +431,7 @@ main { padding-top: var(--bar-h); }
       <div class="sec-head">
         <div class="kicker"><b>03</b> Contenuti</div>
         <h2 class="h2">Cosa pubblicano</h2>
-        <p class="lede">Temi dei post, tipo di immagini e i contenuti che hanno raccolto più reazioni e condivisioni. Il tema è assegnato con parole chiave sul testo; il tipo di immagine dalla descrizione automatica di Facebook.</p>
+        <p class="lede">Temi dei post, tipo di immagini e i contenuti che hanno raccolto più reazioni e condivisioni, sui 1.900 post estratti da 40 pagine il 14 ottobre. Il tema è assegnato con parole chiave sul testo; il tipo di immagine dalla descrizione automatica di Facebook.</p>
       </div>
       <div id="pagefocus"></div>
       <div class="c-grid">
@@ -443,7 +473,7 @@ main { padding-top: var(--bar-h); }
       <div class="sec-head">
         <div class="kicker"><b>04</b> Reti di account</div>
         <h2 class="h2">Chi c'è dietro</h2>
-        <p class="lede">Pagine che dichiarano paesi diversi pubblicano le stesse immagini, varianti generate dallo stesso modello e gli stessi testi. Ogni collegamento è una prova di gestione comune. Clicca una rete o un collegamento per vedere le prove.</p>
+        <p class="lede">Pagine che dichiarano paesi diversi pubblicano le stesse immagini, varianti generate dallo stesso modello e gli stessi testi, oppure amministrano insieme gli stessi gruppi Facebook. Ogni collegamento è una prova di gestione comune. Clicca una rete o un collegamento per vedere le prove.</p>
       </div>
       <div class="net">
         <div class="net-graph" id="net-graph">
@@ -464,10 +494,38 @@ main { padding-top: var(--bar-h); }
     </div>
   </section>
 
+  <section class="sec" id="mercato">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker"><b>05</b> Il mercato</div>
+        <h2 class="h2">Quanto rende</h2>
+        <p class="lede">Una stima di quanto le pagine possono incassare dal programma di monetizzazione dei contenuti di Meta, a partire dalle interazioni reali e dal prezzo della pubblicità in Italia. Meta non pubblica tariffe: la forbice fra minimo e massimo indica l'ordine di grandezza, non il guadagno effettivo di ciascuna pagina.</p>
+      </div>
+      <div class="tech"><div class="big" id="m-big"></div></div>
+      <div class="m-grid">
+        <div class="tech">
+          <div class="ph">Pagine per ricavo stimato <small id="m-rank-n"></small></div>
+          <div class="tabs" role="tablist" aria-label="Ordina le pagine">
+            <button type="button" role="tab" aria-selected="true" data-mby="ricavo_max">Per ricavo</button>
+            <button type="button" role="tab" aria-selected="false" data-mby="vis_mese">Per visualizzazioni</button>
+            <button type="button" role="tab" aria-selected="false" data-mby="follower">Per follower</button>
+          </div>
+          <div class="mrank-head"><span>Pagina</span><span>Forbice al mese, da minimo a massimo</span></div>
+          <div id="m-rank"></div>
+          <div class="more-row"><button type="button" class="btn" id="m-more" hidden>Mostra altre</button></div>
+        </div>
+        <div class="side">
+          <div class="tech"><div class="ph">Per paese di gestione <small>quota del massimo</small></div><div id="m-country"></div></div>
+          <div class="tech"><div class="ph">Come è calcolato</div><div id="m-steps"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <footer class="foot">
     <div class="wrap foot-in">
       <div>
-        <p><b style="color:var(--ink)">Metodo.</b> 43 pagine Facebook individuate da Liberi Network; paese di gestione dalla sezione Trasparenza, follower al 13/10/2026. Ultimi post (fino a 50) di 40 pagine estratti il 14/10/2026 con le loro immagini; 3 pagine non erano più raggiungibili. Una pagina gestita da più paesi conta per ciascuno di essi. Temi e tipo di immagine sono assegnati in automatico. Le immagini in comune tra pagine sono individuate con un'impronta visiva e le varianti generate sono verificate a vista; i testi in comune sono identici parola per parola.</p>
+        <p><b style="color:var(--ink)">Metodo.</b> 116 pagine Facebook individuate da Liberi Network; paese di gestione dalla sezione Trasparenza. Follower, post, reazioni e commenti da Fanpage Karma dal 19/07 al 18/10/2026 per 112 pagine. Ultimi post (fino a 50) di 40 pagine estratti il 14/10/2026 con le loro immagini, base dell'analisi dei contenuti e delle immagini in comune. Gruppi e loro amministratori rilevati da Liberi Network; gli amministratori che non sono pagine dell'elenco sono solo contati. Una pagina gestita da più paesi conta per ciascuno di essi. Temi e tipo di immagine sono assegnati in automatico. Le immagini in comune tra pagine sono individuate con un'impronta visiva e le varianti generate sono verificate a vista; i testi in comune sono identici parola per parola.</p>
         <p>Le immagini e i testi riprodotti appartengono alle pagine analizzate e sono mostrati a scopo di documentazione.</p>
       </div>
       <img src="media/liberi-network.png" alt="Liberi Network" width="420" height="67">
@@ -482,6 +540,7 @@ main { padding-top: var(--bar-h); }
 <script src="js/globo.js"></script>
 <script src="js/contenuti.js"></script>
 <script src="js/reti.js"></script>
+<script src="js/mercato.js"></script>
 
 </body>
 </html>

@@ -1,15 +1,15 @@
 (() => {
   const A = window.APP;
   const ITALIA = { lat: 42.67, lng: 12.27 };
+  const eur = (v) => (v === null || v === undefined ? '—' : `${A.fC(v)} €`);
   const METRICHE = [
     { k: 'pagine', label: 'Numero di pagine', desc: 'quante pagine gestisce il paese', fmt: (v) => A.fInt(v), pageKey: 'follower' },
     { k: 'follower', label: 'Follower', desc: 'somma dei follower delle pagine', fmt: (v) => A.fC(v) },
-    { k: 'interazioni', label: 'Interazioni generate', desc: 'reazioni, commenti e condivisioni', fmt: (v) => A.fC(v) },
-    { k: 'visualizzazioni', label: 'Visualizzazioni video', desc: 'sui video degli ultimi post', fmt: (v) => A.fC(v) },
-    { k: 'interazioni_post', label: 'Interazioni per post', desc: 'media per singolo contenuto', fmt: (v) => A.fInt(v) },
-    { k: 'post_giorno', label: 'Post al giorno', desc: 'ritmo di pubblicazione', fmt: (v) => A.f1(v) },
-    { k: 'interazioni_follower', label: 'Interazioni per follower', desc: 'quanto rende ogni follower', fmt: (v) => A.f1(v) },
-    { k: 'quota_politica', label: 'Quota di post politici', desc: 'leader e politica sul totale', fmt: (v) => A.fP(v) },
+    { k: 'fk_interazioni', label: 'Reazioni e commenti', desc: 'negli ultimi tre mesi', fmt: (v) => A.fC(v) },
+    { k: 'vis_mese', label: 'Visualizzazioni stimate', desc: 'al mese, stimate dalle interazioni', fmt: (v) => A.fC(v) },
+    { k: 'ricavo_max', label: 'Ricavo stimato', desc: 'al mese, ipotesi massima Meta', fmt: (v) => eur(v) },
+    { k: 'fk_post_giorno', label: 'Post al giorno', desc: 'ritmo di pubblicazione', fmt: (v) => A.f1(v) },
+    { k: 'fk_interazioni_post', label: 'Interazioni per post', desc: 'media per singolo contenuto', fmt: (v) => A.fInt(v) },
   ];
   const S = { metric: 'follower', country: null, page: null };
   let agg = new Map();
@@ -26,20 +26,14 @@
     A.data.pagine.forEach((p) => {
       const keys = p.paesi.length ? p.paesi : [NASCOSTA];
       keys.forEach((k) => {
-        if (!agg.has(k)) agg.set(k, { nome: k, pagine: 0, follower: 0, interazioni: 0, visualizzazioni: 0, post_giorno: 0, n_post: 0, follower_attivi: 0, politici: 0, righe: [] });
+        if (!agg.has(k)) agg.set(k, { nome: k, pagine: 0, follower: 0, fk_interazioni: 0, vis_mese: 0, ricavo_min: 0, ricavo_max: 0, fk_post_giorno: 0, fk_post: 0, righe: [] });
         const a = agg.get(k);
         a.pagine += 1; a.follower += p.follower; a.righe.push(p.riga);
-        if (p.n_post) {
-          a.interazioni += p.interazioni; a.visualizzazioni += p.visualizzazioni; a.post_giorno += p.post_giorno;
-          a.n_post += p.n_post; a.follower_attivi += p.follower; a.politici += p.quota_politica * p.n_post;
-        }
+        a.vis_mese += p.vis_mese || 0; a.ricavo_min += p.ricavo_min || 0; a.ricavo_max += p.ricavo_max || 0;
+        if (p.fk_post !== null && p.fk_post !== undefined) { a.fk_interazioni += p.fk_interazioni; a.fk_post_giorno += p.fk_post_giorno; a.fk_post += p.fk_post; }
       });
     });
-    agg.forEach((a) => {
-      a.interazioni_post = a.n_post ? a.interazioni / a.n_post : null;
-      a.interazioni_follower = a.follower_attivi ? a.interazioni / a.follower_attivi : null;
-      a.quota_politica = a.n_post ? a.politici / a.n_post : null;
-    });
+    agg.forEach((a) => { a.fk_interazioni_post = a.fk_post ? a.fk_interazioni / a.fk_post : null; });
   }
 
   const ramp = d3.interpolateRgb('#3A2133', '#FF2FA6');
@@ -103,16 +97,20 @@
       const back = A.el('button', 'back', `← ${S.country || 'Tutti i paesi'}`); back.type = 'button';
       back.addEventListener('click', () => { S.page = null; card(); });
       const head = A.el('div', 'ph'); head.append(back, A.el('small', '', 'Scheda pagina'));
+      const fk = p.fk_post !== null && p.fk_post !== undefined;
       const grid = metricsGrid([
         ['Follower', A.fInt(p.follower), true],
-        ['Interazioni', p.n_post ? A.fInt(p.interazioni) : 'n.d.'],
-        ['Interazioni per post', p.n_post ? A.fInt(p.interazioni_post) : 'n.d.'],
-        ['Visualizzazioni', p.n_post ? A.fC(p.visualizzazioni) : 'n.d.'],
-        ['Post al giorno', p.n_post ? A.f1(p.post_giorno) : 'n.d.'],
-        ['Interazioni per follower', p.n_post ? A.f1(p.interazioni_follower) : 'n.d.'],
-        ['Post politici', p.n_post ? A.fP(p.quota_politica) : 'n.d.'],
+        ['Post in 3 mesi', fk ? A.fInt(p.fk_post) : 'n.d.'],
+        ['Reazioni e commenti, 3 mesi', fk ? A.fInt(p.fk_interazioni) : 'n.d.'],
+        ['Interazioni per post', fk ? A.fInt(p.fk_interazioni_post) : 'n.d.'],
+        ['Post al giorno', fk ? A.f1(p.fk_post_giorno) : 'n.d.'],
+        ['Visualizzazioni al mese', `${A.fC(p.vis_mese)}${p.vis_origine === 'follower' ? ' *' : ''}`],
+        ['Ricavo stimato al mese', p.idonea ? `${A.fInt(p.ricavo_min)} – ${A.fInt(p.ricavo_max)} €` : 'non idonea', p.idonea],
         ['Rete', p.rete || 'nessuna', !!p.rete],
       ]);
+      const gr = (p.gruppi || []).map((id) => A.G.get(id)).filter(Boolean);
+      const grBox = A.el('div', 'signals');
+      gr.forEach((g) => grBox.append(A.el('div', '', `${g.nome} · ${A.fInt(g.membri)} membri`)));
       const sig = A.el('div', 'signals');
       (p.segnali.length ? p.segnali : ['Nessun segnale particolare oltre alla gestione estera']).forEach((s) => sig.append(A.el('div', '', s)));
       const act = A.el('div', 'card-actions');
@@ -128,7 +126,12 @@
         r.addEventListener('click', () => { A.emit('rete', p.rete); document.getElementById('reti').scrollIntoView({ behavior: 'smooth' }); });
         act.append(r);
       }
-      body.replaceChildren(head, top, grid, A.el('div', 'sub-h', 'Segnali'), sig, act);
+      const parts = [head, top, grid];
+      if (p.vis_origine === 'follower') parts.push(A.el('p', 'empty-note', '* Senza dati Fanpage Karma: visualizzazioni stimate dai follower.'));
+      parts.push(A.el('div', 'sub-h', 'Segnali'), sig);
+      if (gr.length) parts.push(A.el('div', 'sub-h', 'Gruppi che amministra'), grBox);
+      parts.push(act);
+      body.replaceChildren(...parts);
       return;
     }
     if (S.country) {
@@ -139,8 +142,8 @@
       const h = A.el('div', 'ctry-head'); h.append(A.el('h3', '', S.country === NASCOSTA ? 'Origine nascosta' : a.nome));
       const grid = metricsGrid([
         ['Pagine', A.fInt(a.pagine), true], ['Follower', A.fInt(a.follower)],
-        ['Interazioni', A.fC(a.interazioni)], ['Visualizzazioni', A.fC(a.visualizzazioni)],
-        ['Interazioni per post', A.fInt(a.interazioni_post)], ['Post al giorno', A.f1(a.post_giorno)],
+        ['Reazioni e commenti, 3 mesi', A.fC(a.fk_interazioni)], ['Visualizzazioni al mese', A.fC(a.vis_mese)],
+        ['Post al giorno', A.f1(a.fk_post_giorno)], ['Ricavo stimato al mese', `${A.fC(a.ricavo_min)} – ${A.fC(a.ricavo_max)} €`, true],
       ]);
       body.replaceChildren(head, h, grid, A.el('div', 'sub-h', `Pagine · ordinate per ${m.pageKey ? 'follower' : m.label.toLowerCase()}`), pageRows(a.righe));
       return;
@@ -149,7 +152,7 @@
     const head = A.el('div', 'ph'); head.append(A.el('span', '', 'Panoramica'), A.el('small', '', 'tutte le pagine'));
     const grid = metricsGrid([
       ['Pagine', A.fInt(P.length), true], ['Paesi esteri', A.fInt([...agg.keys()].filter((k) => k !== 'Italia' && k !== NASCOSTA).length)],
-      ['Follower', A.fInt(d3.sum(P, (p) => p.follower))], ['Interazioni', A.fC(d3.sum(P, (p) => p.interazioni || 0))],
+      ['Follower', A.fInt(d3.sum(P, (p) => p.follower))], ['Ricavo stimato al mese', `${A.fC(A.data.mercato.ricavo_min)} – ${A.fC(A.data.mercato.ricavo_max)} €`, true],
     ]);
     const note = A.el('p', 'empty-note', 'Le colonne sui paesi misurano la metrica scelta. Clicca un paese sul mappamondo o nella lista a sinistra per vedere le sue pagine. Qui sotto le pagine più forti per la metrica scelta.');
     const top = [...P].sort((a, b) => (pageVal(b) ?? -1) - (pageVal(a) ?? -1)).slice(0, 12).map((p) => p.riga);

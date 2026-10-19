@@ -2,7 +2,7 @@
   const COLORS = {
     'Sri Lanka': '#FF2FA6', 'Pakistan': '#FAA074', 'Armenia': '#80B9FC', 'Vietnam': '#57BE83',
     'Cambogia': '#E7C94A', 'Regno Unito': '#B48CFF', 'Australia': '#57D6C9', 'Stati Uniti': '#6B97FC',
-    'Emirati Arabi Uniti': '#F1D06B', 'Canada': '#FF7267', 'Italia': '#E9E7E4', 'Non dichiarato': '#7E858E',
+    'Emirati Arabi Uniti': '#F1D06B', 'Canada': '#FF7267', 'Corea del Sud': '#C3F25C', 'Qatar': '#D98CFF', 'Italia': '#E9E7E4', 'Non dichiarato': '#7E858E',
   };
   const TEMI = {
     'Leader e politica': '#FF2FA6', 'Immigrazione e sicurezza': '#FF7267', 'Orgoglio italiano': '#E9E7E4',
@@ -22,7 +22,7 @@
     f1: (n) => (n === null || n === undefined ? '—' : nf1.format(n)),
     fC: (n) => (n === null || n === undefined ? '—' : n >= 1e6 ? `${nf1.format(n / 1e6)} Mln` : n >= 1e4 ? `${nf.format(Math.round(n / 1000))} mila` : nf.format(Math.round(n))),
     fP: (n) => (n === null || n === undefined ? '—' : pf.format(n)),
-    fD: (s) => df.format(new Date(s.length <= 10 ? s + 'T12:00:00Z' : s)),
+    fD: (s) => (!s ? 'n.d.' : df.format(new Date(s.length <= 10 ? s + 'T12:00:00Z' : s))),
     state: { pagina: null, tema: null },
     on(ev, fn) { (listeners[ev] = listeners[ev] || []).push(fn); },
     emit(ev, v) { (listeners[ev] || []).forEach((fn) => fn(v)); },
@@ -39,7 +39,12 @@
   APP.sw = (color) => { const i = APP.el('i', 'sw'); i.style.background = color; return i; };
   APP.avatar = (page, cls) => {
     if (page && page.foto) { const i = APP.el('img', cls || ''); i.src = page.foto; i.alt = ''; i.loading = 'lazy'; return i; }
-    const d = APP.el('div', 'avatar ' + (cls || '')); return d;
+    const d = APP.el('div', 'avatar ' + (cls || ''));
+    const w = (page && page.nome ? page.nome : '?').replace(/[^\p{L}\p{N} ]/gu, '').split(/\s+/).filter(Boolean);
+    d.textContent = ((w[0] || '?')[0] + (w[1] ? w[1][0] : '')).toUpperCase();
+    d.style.background = APP.colorOf(page && page.paese_principale) + '33';
+    d.style.color = APP.colorOf(page && page.paese_principale);
+    return d;
   };
   APP.media = (file) => (file ? 'media/' + file.replace(/\.[a-z]+$/i, '.webp') : null);
   APP.setPagina = (riga, go) => {
@@ -140,18 +145,17 @@
   }
 
   function big() {
-    const P = APP.data.pagine; const post = APP.data.post;
-    const record = d3.greatest(P.filter((p) => p.post_giorno), (p) => p.post_giorno);
+    const P = APP.data.pagine; const post = APP.data.post; const M = APP.data.mercato;
     const items = [
-      ['Pagine monitorate', APP.fInt(P.length), 'tutte attive al 13 ottobre', false],
-      ['Follower complessivi', APP.fC(d3.sum(P, (p) => p.follower)), 'sommati sulle 43 pagine', false],
-      ['Gestite dallo Sri Lanka', APP.fInt(P.filter((p) => p.paesi.includes('Sri Lanka')).length), 'tra i paesi dichiarati', true],
-      ['Visualizzazioni video', APP.fC(d3.sum(post, (p) => p.visualizzazioni || 0)), 'solo negli ultimi 50 post per pagina', false],
-      ['Interazioni', APP.fC(d3.sum(post, (p) => p.interazioni)), 'reazioni, commenti e condivisioni', false],
-      ['Post su leader e politica', APP.fP(post.filter((p) => p.tema === 'Leader e politica').length / post.length), 'tre su quattro citano Giorgia Meloni', true],
-      ['Post al giorno, record', APP.f1(record.post_giorno), `${record.nome}, ${record.paesi.join(' · ')}`, false],
-      ['Reti coordinate', APP.fInt(APP.data.reti.length), `${d3.sum(APP.data.reti, (r) => r.n_pagine)} pagine con contenuti in comune`, true],
-      ['Origine nascosta', APP.fInt(P.filter((p) => !p.paesi.length).length), 'nessun paese dichiarato', false],
+      ['Pagine monitorate', APP.fInt(P.length), `${APP.fInt(M.idonee)} sopra la soglia di monetizzazione`, false],
+      ['Follower complessivi', APP.fC(M.follower), 'sommati su tutte le pagine', false],
+      ['Gestite dallo Sri Lanka', APP.fInt(P.filter((p) => p.paesi.includes('Sri Lanka')).length), 'tra i paesi dichiarati in Trasparenza', true],
+      ['Post in tre mesi', APP.fInt(M.fk_post), M.periodo, false],
+      ['Reazioni e commenti', APP.fC(M.fk_interazioni), 'negli stessi tre mesi', false],
+      ['Ricavo stimato all\'anno', `${APP.fC(M.ricavo_min * 12)} – ${APP.fC(M.ricavo_max * 12)} €`, 'solo monetizzazione dei contenuti Meta', true],
+      ['Post su leader e politica', APP.fP(post.filter((p) => p.tema === 'Leader e politica').length / post.length), 'su 1.900 post analizzati, tre su quattro citano Meloni', true],
+      ['Membri dei gruppi collegati', APP.fC(M.membri_gruppi), `${APP.fInt(M.gruppi)} gruppi amministrati dalle pagine`, false],
+      ['Reti coordinate', APP.fInt(APP.data.reti.length), `${d3.sum(APP.data.reti, (r) => r.n_pagine)} pagine con contenuti o gruppi in comune`, true],
     ];
     document.getElementById('big').replaceChildren(...items.map(([l, v, s, hot]) => {
       const d = APP.el('div'); d.append(APP.el('span', '', l), APP.el('b', hot ? 'hot' : '', v), APP.el('small', '', s)); return d;
@@ -163,11 +167,12 @@
   const io = new IntersectionObserver((es) => {
     es.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle('on', a.dataset.sec === e.target.id)); });
   }, { rootMargin: '-45% 0px -50% 0px' });
-  ['contesto', 'localizzazione', 'contenuti', 'reti'].forEach((id) => io.observe(document.getElementById(id)));
+  ['contesto', 'localizzazione', 'contenuti', 'reti', 'mercato'].forEach((id) => io.observe(document.getElementById(id)));
 
-  APP.ready = Promise.all(['pagine', 'post', 'legami', 'reti', 'mondo', 'scelte'].map((k) => fetch(`data/${k}.json`).then((r) => r.json()).then((d) => { APP.data[k] = d; })))
+  APP.ready = Promise.all(['pagine', 'post', 'legami', 'reti', 'mondo', 'scelte', 'gruppi', 'mercato'].map((k) => fetch(`data/${k}.json`).then((r) => r.json()).then((d) => { APP.data[k] = d; })))
     .then(() => {
       APP.P = new Map(APP.data.pagine.map((p) => [p.riga, p]));
+      APP.G = new Map(APP.data.gruppi.map((g) => [g.id, g]));
       const bigs = new Set(APP.data.scelte.feed.map((id) => APP.data.post.find((p) => p.post_id === id)?.immagine));
       const byI = [...APP.data.post].filter((p) => p.immagine).sort((a, b) => b.interazioni - a.interazioni).slice(0, 24);
       const byS = [...APP.data.post].filter((p) => p.immagine).sort((a, b) => b.condivisioni - a.condivisioni).slice(0, 24);
